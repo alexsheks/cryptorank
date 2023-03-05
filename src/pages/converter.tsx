@@ -1,15 +1,12 @@
-import axios from "axios";
-import { type NextPage } from "next";
+import { NextPage } from "next";
 import Head from "next/head";
 import useSWR from "swr";
-import WatchlistTable from "~/components/WatchlistTable";
+import CurrencyConverter from "~/components/CurrencyConverter";
+import { fetcher } from ".";
 
-export const fetcher = (url: string) =>
-  axios.get(url).then((res) => res.data.data);
-
-const Home: NextPage = () => {
+const Converter: NextPage = () => {
   const { data, error, isLoading } = useSWR<Currency[]>(
-    "https://tstapi.cryptorank.io/v0/coins?limit=15",
+    "https://api.cryptorank.io/v1/currencies?api_key=dfb7e374d4831d0143754045efd95fee1a77b03d5b997bceab8353b247f0&limit=15",
     fetcher
   );
 
@@ -19,13 +16,13 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Watchlist</title>
+        <title>Converter</title>
         <meta name="description" content="Powered by Cryptorank" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <WatchlistTable data={data} />
+      <CurrencyConverter data={data} />;
     </>
   );
 };
 
-export default Home;
+export default Converter;

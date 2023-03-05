@@ -24,7 +24,6 @@ const client = z.object({
  */
 const processEnv = {
   NODE_ENV: process.env.NODE_ENV,
-  // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 
 // Don't touch the part below
@@ -36,21 +35,19 @@ const merged = server.merge(client);
 /** @typedef {z.infer<typeof merged>} MergedOutput */
 /** @typedef {z.SafeParseReturnType<MergedInput, MergedOutput>} MergedSafeParseReturn */
 
-let env = /** @type {MergedOutput} */ (process.env);
+let env = /** @type {MergedOutput} */ process.env;
 
 if (!!process.env.SKIP_ENV_VALIDATION == false) {
   const isServer = typeof window === "undefined";
 
-  const parsed = /** @type {MergedSafeParseReturn} */ (
-    isServer
-      ? merged.safeParse(processEnv) // on server we can validate all env vars
-      : client.safeParse(processEnv) // on client we can only validate the ones that are exposed
-  );
+  const parsed = /** @type {MergedSafeParseReturn} */ isServer
+    ? merged.safeParse(processEnv) // on server we can validate all env vars
+    : client.safeParse(processEnv); // on client we can only validate the ones that are exposed
 
   if (parsed.success === false) {
     console.error(
       "❌ Invalid environment variables:",
-      parsed.error.flatten().fieldErrors,
+      parsed.error.flatten().fieldErrors
     );
     throw new Error("Invalid environment variables");
   }
@@ -64,9 +61,9 @@ if (!!process.env.SKIP_ENV_VALIDATION == false) {
         throw new Error(
           process.env.NODE_ENV === "production"
             ? "❌ Attempted to access a server-side environment variable on the client"
-            : `❌ Attempted to access server-side environment variable '${prop}' on the client`,
+            : `❌ Attempted to access server-side environment variable '${prop}' on the client`
         );
-      return target[/** @type {keyof typeof target} */ (prop)];
+      return target[/** @type {keyof typeof target} */ prop];
     },
   });
 }
